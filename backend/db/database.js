@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-const logger = require('../utils/logger');
+const { Pool } = require("pg");
+const logger = require("../utils/logger");
 
 class Database {
   constructor() {
@@ -21,13 +21,13 @@ class Database {
 
       // Test connection
       const client = await this.pool.connect();
-      await client.query('SELECT NOW()');
+      await client.query("SELECT NOW()");
       client.release();
-      
-      logger.info('PostgreSQL connected successfully');
+
+      logger.info("PostgreSQL connected successfully");
       return true;
     } catch (error) {
-      logger.error('Database connection error:', error);
+      logger.error("Database connection error:", error);
       throw error;
     }
   }
@@ -35,7 +35,7 @@ class Database {
   async disconnect() {
     if (this.pool) {
       await this.pool.end();
-      logger.info('Database connection closed');
+      logger.info("Database connection closed");
     }
   }
 
@@ -137,9 +137,9 @@ class Database {
 
     try {
       await this.pool.query(createTablesSQL);
-      logger.info('Database tables created/verified successfully');
+      logger.info("Database tables created/verified successfully");
     } catch (error) {
-      logger.error('Error creating tables:', error);
+      logger.error("Error creating tables:", error);
       throw error;
     }
   }
@@ -149,10 +149,12 @@ class Database {
     try {
       const result = await this.pool.query(text, params);
       const duration = Date.now() - start;
-      logger.debug(`Query executed in ${duration}ms: ${text.substring(0, 100)}`);
+      logger.debug(
+        `Query executed in ${duration}ms: ${text.substring(0, 100)}`
+      );
       return result;
     } catch (error) {
-      logger.error('Query error:', error);
+      logger.error("Query error:", error);
       throw error;
     }
   }
@@ -160,7 +162,7 @@ class Database {
   // Helper methods
   async getStateByName(stateName) {
     const result = await this.query(
-      'SELECT * FROM states WHERE UPPER(state_name) = UPPER($1)',
+      "SELECT * FROM states WHERE UPPER(state_name) = UPPER($1)",
       [stateName]
     );
     return result.rows[0];
@@ -168,7 +170,7 @@ class Database {
 
   async createState(stateName) {
     const result = await this.query(
-      'INSERT INTO states (state_name) VALUES ($1) ON CONFLICT (state_name) DO UPDATE SET state_name = EXCLUDED.state_name RETURNING *',
+      "INSERT INTO states (state_name) VALUES ($1) ON CONFLICT (state_name) DO UPDATE SET state_name = EXCLUDED.state_name RETURNING *",
       [stateName]
     );
     return result.rows[0];
@@ -176,7 +178,7 @@ class Database {
 
   async getDistrictByName(stateId, districtName) {
     const result = await this.query(
-      'SELECT * FROM districts WHERE state_id = $1 AND UPPER(district_name) = UPPER($2)',
+      "SELECT * FROM districts WHERE state_id = $1 AND UPPER(district_name) = UPPER($2)",
       [stateId, districtName]
     );
     return result.rows[0];
@@ -184,7 +186,7 @@ class Database {
 
   async createDistrict(stateId, districtName) {
     const result = await this.query(
-      'INSERT INTO districts (state_id, district_name) VALUES ($1, $2) ON CONFLICT (state_id, district_name) DO UPDATE SET district_name = EXCLUDED.district_name RETURNING *',
+      "INSERT INTO districts (state_id, district_name) VALUES ($1, $2) ON CONFLICT (state_id, district_name) DO UPDATE SET district_name = EXCLUDED.district_name RETURNING *",
       [stateId, districtName]
     );
     return result.rows[0];
@@ -216,7 +218,7 @@ class Database {
       total_number_persondays_generated,
       persondays_generated_women,
       persondays_generated_sc,
-      persondays_generated_st
+      persondays_generated_st,
     } = data;
 
     const result = await this.query(
@@ -261,15 +263,31 @@ class Database {
         updated_at = CURRENT_TIMESTAMP
       RETURNING *`,
       [
-        district_id, fin_year, month,
-        total_job_cards_issued, total_workers, total_active_workers,
-        sc_workers, st_workers, total_women,
-        avg_days_employment, hhs_completed_100_days, total_households_worked,
-        total_individuals_worked, differently_abled_worked, number_of_gps,
-        total_expenditure, wage_material_ratio, total_work_takenup,
-        number_of_ongoing_works, number_of_completed_works,
-        total_administrative_expenditure, total_number_persondays_generated,
-        persondays_generated_women, persondays_generated_sc, persondays_generated_st
+        district_id,
+        fin_year,
+        month,
+        total_job_cards_issued,
+        total_workers,
+        total_active_workers,
+        sc_workers,
+        st_workers,
+        total_women,
+        avg_days_employment,
+        hhs_completed_100_days,
+        total_households_worked,
+        total_individuals_worked,
+        differently_abled_worked,
+        number_of_gps,
+        total_expenditure,
+        wage_material_ratio,
+        total_work_takenup,
+        number_of_ongoing_works,
+        number_of_completed_works,
+        total_administrative_expenditure,
+        total_number_persondays_generated,
+        persondays_generated_women,
+        persondays_generated_sc,
+        persondays_generated_st,
       ]
     );
     return result.rows[0];

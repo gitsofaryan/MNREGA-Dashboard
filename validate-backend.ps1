@@ -14,11 +14,13 @@ if ($nodeVersion -match "v(\d+)\.") {
     $majorVersion = [int]$matches[1]
     if ($majorVersion -ge 18) {
         Write-Host "✅ Node.js $nodeVersion (required: v18+)" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "❌ Node.js $nodeVersion is too old (required: v18+)" -ForegroundColor Red
         $errors++
     }
-} else {
+}
+else {
     Write-Host "❌ Node.js not found" -ForegroundColor Red
     $errors++
 }
@@ -28,7 +30,8 @@ Write-Host ""
 Write-Host "Checking backend directory..." -ForegroundColor Yellow
 if (Test-Path "backend") {
     Write-Host "✅ Backend directory exists" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "❌ Backend directory not found" -ForegroundColor Red
     $errors++
 }
@@ -52,7 +55,8 @@ $requiredFiles = @(
 foreach ($file in $requiredFiles) {
     if (Test-Path $file) {
         Write-Host "✅ $file" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "❌ $file missing" -ForegroundColor Red
         $errors++
     }
@@ -70,7 +74,8 @@ if (Test-Path "backend\.env") {
         Write-Host "⚠️  WARNING: DB_PASSWORD not set in .env" -ForegroundColor Yellow
         $warnings++
     }
-} else {
+}
+else {
     Write-Host "⚠️  WARNING: .env not found (will use .env.example)" -ForegroundColor Yellow
     $warnings++
 }
@@ -80,7 +85,8 @@ Write-Host ""
 Write-Host "Checking dependencies..." -ForegroundColor Yellow
 if (Test-Path "backend\node_modules") {
     Write-Host "✅ Dependencies installed" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  WARNING: Dependencies not installed (run 'npm install' in backend folder)" -ForegroundColor Yellow
     $warnings++
 }
@@ -101,7 +107,8 @@ $docFiles = @(
 foreach ($file in $docFiles) {
     if (Test-Path $file) {
         Write-Host "✅ $file" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "❌ $file missing" -ForegroundColor Red
         $errors++
     }
@@ -114,11 +121,13 @@ try {
     $pgVersion = psql --version 2>$null
     if ($pgVersion) {
         Write-Host "✅ PostgreSQL installed: $pgVersion" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "⚠️  WARNING: PostgreSQL not found (required for local testing)" -ForegroundColor Yellow
         $warnings++
     }
-} catch {
+}
+catch {
     Write-Host "⚠️  WARNING: PostgreSQL not found (required for local testing)" -ForegroundColor Yellow
     $warnings++
 }
@@ -141,7 +150,8 @@ foreach ($file in $jsFiles) {
         $syntaxCheck = node --check $file 2>&1
         if ($LASTEXITCODE -eq 0) {
             Write-Host "✅ $file syntax OK" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "❌ $file has syntax errors: $syntaxCheck" -ForegroundColor Red
             $errors++
         }
@@ -158,12 +168,14 @@ if (Test-Path "backend\package.json") {
     foreach ($script in $requiredScripts) {
         if ($packageJson.scripts.$script) {
             Write-Host "✅ Script '$script' defined" -ForegroundColor Green
-        } else {
+        }
+        else {
             Write-Host "❌ Script '$script' missing" -ForegroundColor Red
             $errors++
         }
     }
-} else {
+}
+else {
     Write-Host "❌ package.json not found" -ForegroundColor Red
     $errors++
 }
@@ -177,11 +189,13 @@ if (Test-Path "backend\.gitignore") {
     $gitignore = Get-Content "backend\.gitignore" -Raw
     if ($gitignore -match "\.env" -and $gitignore -match "node_modules" -and $gitignore -match "logs") {
         Write-Host "✅ .gitignore properly configured" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "⚠️  WARNING: .gitignore may be missing important entries" -ForegroundColor Yellow
         $warnings++
     }
-} else {
+}
+else {
     Write-Host "⚠️  WARNING: .gitignore not found" -ForegroundColor Yellow
     $warnings++
 }
@@ -192,7 +206,8 @@ if (Test-Path ".git") {
     if ($gitStatus) {
         Write-Host "❌ CRITICAL: .env is tracked by git (should be in .gitignore)" -ForegroundColor Red
         $errors++
-    } else {
+    }
+    else {
         Write-Host "✅ .env not tracked by git" -ForegroundColor Green
     }
 }
@@ -217,11 +232,13 @@ if ($errors -eq 0 -and $warnings -eq 0) {
     Write-Host "5. npm run init-db (initialize database)" -ForegroundColor White
     Write-Host "6. npm run sync-data (sync initial data)" -ForegroundColor White
     Write-Host "7. npm start (start server)" -ForegroundColor White
-} elseif ($errors -eq 0) {
+}
+elseif ($errors -eq 0) {
     Write-Host "⚠️  PASSED WITH WARNINGS ($warnings warnings)" -ForegroundColor Yellow
     Write-Host ""
     Write-Host "Your backend is mostly ready, but please review the warnings above." -ForegroundColor Yellow
-} else {
+}
+else {
     Write-Host "❌ VALIDATION FAILED ($errors errors, $warnings warnings)" -ForegroundColor Red
     Write-Host ""
     Write-Host "Please fix the errors above before deploying." -ForegroundColor Red
